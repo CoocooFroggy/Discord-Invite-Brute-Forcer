@@ -6,7 +6,9 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -41,13 +43,16 @@ public class Main extends ListenerAdapter {
     }
 
     public static void registerSlashCommands() {
-//        Guild guild = jda.getGuildById("685606700929384489");
-//        assert guild != null;
-        jda.upsertCommand("brute", "Brute force invite for specified string")
+        Guild guild = jda.getGuildById("842189018523631658");
+        assert guild != null;
+        Command bruteCommand = jda.upsertCommand("brute", "Brute force invite for specified string")
                 .addOption(OptionType.STRING, "string", "String to brute force", true)
                 .addOption(OptionType.BOOLEAN, "case_sensitive", "True if case sensitive, false if not", true)
                 .addOption(OptionType.CHANNEL, "channel", "Channel to brute invites for", true)
-                .queue();
+                .setDefaultEnabled(false)
+                .complete();
+
+        bruteCommand.updatePrivileges(guild, CommandPrivilege.enableRole("872569355060256769")).complete();
     }
 
     @Override
@@ -61,10 +66,7 @@ public class Main extends ListenerAdapter {
                 event.reply("String is longer than 8 characters, can't continue.").queue();
                 return;
             }
-            boolean ignoreCase = true;
-            if (event.getOption("case_sensitive").getAsBoolean()) {
-                ignoreCase = false;
-            }
+            boolean ignoreCase = !event.getOption("case_sensitive").getAsBoolean();
 
             GuildChannel channel = event.getOption("channel").getAsGuildChannel();
 
@@ -77,9 +79,9 @@ public class Main extends ListenerAdapter {
                     .complete();
             String code;
             if (ignoreCase) {
-                code = invite.getCode();
-            } else {
                 code = invite.getCode().toLowerCase();
+            } else {
+                code = invite.getCode();
             }
 
                 while (!code.startsWith(brute)) {
@@ -92,9 +94,9 @@ public class Main extends ListenerAdapter {
                             .setMaxUses(0)
                             .complete();
                     if (ignoreCase) {
-                        code = invite.getCode();
-                    } else {
                         code = invite.getCode().toLowerCase();
+                    } else {
+                        code = invite.getCode();
                     }
                     System.out.println(code);
                 } catch (Exception e) {
