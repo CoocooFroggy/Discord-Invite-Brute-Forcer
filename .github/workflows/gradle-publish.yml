@@ -32,6 +32,6 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: fat-jar
-        path: build/libs/FutureRestore Server-1.0-all.jar
+        path: build/libs/Invite Brute Forcer-1.0-all.jar
 
     
