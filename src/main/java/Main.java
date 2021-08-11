@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class Main extends ListenerAdapter {
     public static void main(String[] args) {
@@ -86,7 +87,9 @@ public class Main extends ListenerAdapter {
 
                 while (!code.startsWith(brute)) {
                 try {
+                    TimeUnit.SECONDS.sleep(1);
                     invite.delete().complete();
+                    TimeUnit.SECONDS.sleep(1);
                     invite = channel
                             .createInvite()
                             .setUnique(true)
