@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -23,6 +24,18 @@ public class Main extends ListenerAdapter {
             return;
         }
         registerSlashCommands();
+
+        if (args.length == 4) {
+            GuildChannel channel = jda.getGuildChannelById(args[0]);
+            MessageChannel triggeredChannel = jda.getTextChannelById(args[1]);
+            String brute = args[2];
+            String ignoreCaseString = args[3];
+            boolean ignoreCase = false;
+            if (ignoreCaseString.equalsIgnoreCase("true"))
+                ignoreCase = true;
+
+            startBrute(channel, triggeredChannel, brute, ignoreCase);
+        }
     }
 
     static JDA jda;
@@ -59,56 +72,59 @@ public class Main extends ListenerAdapter {
     @Override
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
         if (event.getName().equals("brute")) {
-            Guild guild = event.getGuild();
-            assert guild != null;
-
+            GuildChannel channel = event.getOption("channel").getAsGuildChannel();
+            MessageChannel triggeredChannel = event.getChannel();
             String brute = Objects.requireNonNull(event.getOption("string")).getAsString();
+
             if (brute.length() > 8) {
                 event.reply("String is longer than 8 characters, can't continue.").queue();
                 return;
             }
             boolean ignoreCase = !event.getOption("case_sensitive").getAsBoolean();
 
-            GuildChannel channel = event.getOption("channel").getAsGuildChannel();
-
             event.reply("Starting").queue();
-            Invite invite = channel
-                    .createInvite()
-                    .setUnique(true)
-                    .setMaxAge(0)
-                    .setMaxUses(0)
-                    .complete();
-            String code;
-            if (ignoreCase) {
-                code = invite.getCode().toLowerCase();
-            } else {
-                code = invite.getCode();
-            }
 
-                while (!code.startsWith(brute)) {
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                    invite.delete().complete();
-                    TimeUnit.SECONDS.sleep(1);
-                    invite = channel
-                            .createInvite()
-                            .setUnique(true)
-                            .setMaxAge(0)
-                            .setMaxUses(0)
-                            .complete();
-                    if (ignoreCase) {
-                        code = invite.getCode().toLowerCase();
-                    } else {
-                        code = invite.getCode();
-                    }
-                    System.out.println(code);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("Continuing anyways");
-                }
-            }
-            System.out.println(invite.getUrl());
-            event.getChannel().sendMessage(invite.getUrl()).queue();
+            startBrute(channel, triggeredChannel, brute, ignoreCase);
         }
+    }
+
+    public static void startBrute(GuildChannel channel, MessageChannel triggeredChannel, String brute, boolean ignoreCase) {
+        Invite invite = channel
+                .createInvite()
+                .setUnique(true)
+                .setMaxAge(0)
+                .setMaxUses(0)
+                .complete();
+        String code;
+        if (ignoreCase) {
+            code = invite.getCode().toLowerCase();
+        } else {
+            code = invite.getCode();
+        }
+
+        while (!code.startsWith(brute)) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+                invite.delete().complete();
+                TimeUnit.SECONDS.sleep(1);
+                invite = channel
+                        .createInvite()
+                        .setUnique(true)
+                        .setMaxAge(0)
+                        .setMaxUses(0)
+                        .complete();
+                if (ignoreCase) {
+                    code = invite.getCode().toLowerCase();
+                } else {
+                    code = invite.getCode();
+                }
+                System.out.println(code);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Continuing anyways");
+            }
+        }
+        System.out.println(invite.getUrl());
+        triggeredChannel.sendMessage(invite.getUrl()).queue();
     }
 }
