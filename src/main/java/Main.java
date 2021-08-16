@@ -104,9 +104,7 @@ public class Main extends ListenerAdapter {
 
         while (!code.startsWith(brute)) {
             try {
-                TimeUnit.SECONDS.sleep(1);
-                invite.delete().complete();
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.SECONDS.sleep(2);
                 invite = channel
                         .createInvite()
                         .setUnique(true)
@@ -119,6 +117,13 @@ public class Main extends ListenerAdapter {
                     code = invite.getCode();
                 }
                 System.out.println(code);
+                if (code.startsWith(brute))
+                    break;
+                // Unnecessary but just in case
+                else {
+                    TimeUnit.SECONDS.sleep(2);
+                    invite.delete().complete();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Continuing anyways");
