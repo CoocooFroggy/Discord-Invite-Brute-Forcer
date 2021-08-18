@@ -25,6 +25,7 @@ public class Main extends ListenerAdapter {
         }
         registerSlashCommands();
 
+        // Be able to start a brute from CLI if we're lazy
         if (args.length == 4) {
             GuildChannel channel = jda.getGuildChannelById(args[0]);
             MessageChannel triggeredChannel = jda.getTextChannelById(args[1]);
@@ -42,6 +43,9 @@ public class Main extends ListenerAdapter {
     static String token;
 
     public static boolean startBot() throws InterruptedException {
+        // Set your token in an environment variable to BRUTE_TOKEN
+        // In a shell script to launch the bot, you can do
+        // export BRUTE_TOKEN=[token]
         token = System.getenv("BRUTE_TOKEN");
         JDABuilder jdaBuilder = JDABuilder.createDefault(token);
         jdaBuilder.setStatus(OnlineStatus.INVISIBLE);
@@ -57,7 +61,7 @@ public class Main extends ListenerAdapter {
     }
 
     public static void registerSlashCommands() {
-        Guild guild = jda.getGuildById("842189018523631658");
+        Guild guild = jda.getGuildById("YOUR ID HERE");
         assert guild != null;
         Command bruteCommand = jda.upsertCommand("brute", "Brute force invite for specified string")
                 .addOption(OptionType.STRING, "string", "String to brute force", true)
@@ -66,7 +70,7 @@ public class Main extends ListenerAdapter {
                 .setDefaultEnabled(false)
                 .complete();
 
-        bruteCommand.updatePrivileges(guild, CommandPrivilege.enableRole("872569355060256769")).complete();
+        bruteCommand.updatePrivileges(guild, CommandPrivilege.enableRole("YOUR MOD ROLE ID HERE")).complete();
     }
 
     @Override
@@ -89,22 +93,13 @@ public class Main extends ListenerAdapter {
     }
 
     public static void startBrute(GuildChannel channel, MessageChannel triggeredChannel, String brute, boolean ignoreCase) {
-        Invite invite = channel
-                .createInvite()
-                .setUnique(true)
-                .setMaxAge(0)
-                .setMaxUses(0)
-                .complete();
-        String code;
-        if (ignoreCase) {
-            code = invite.getCode().toLowerCase();
-        } else {
-            code = invite.getCode();
-        }
-
+        Invite invite = null;
+        String code = "";
+        // We break anyways, but we'll have this while condition here just in case
         while (!code.startsWith(brute)) {
             try {
                 TimeUnit.SECONDS.sleep(2);
+                // Create the invite
                 invite = channel
                         .createInvite()
                         .setUnique(true)
@@ -117,9 +112,10 @@ public class Main extends ListenerAdapter {
                     code = invite.getCode();
                 }
                 System.out.println(code);
+                // Check if it matches
                 if (code.startsWith(brute))
                     break;
-                // Unnecessary but just in case
+                // Unnecessary but just in case, I'll include this else block
                 else {
                     TimeUnit.SECONDS.sleep(2);
                     invite.delete().complete();
@@ -129,7 +125,8 @@ public class Main extends ListenerAdapter {
                 System.out.println("Continuing anyways");
             }
         }
+        // Got the invite!
         System.out.println(invite.getUrl());
-        triggeredChannel.sendMessage(invite.getUrl()).queue();
+        triggeredChannel.sendMessage("Invite brute forced!\n" + invite.getUrl()).queue();
     }
 }
