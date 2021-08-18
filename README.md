@@ -10,7 +10,8 @@ There are two placeholders in Main.java that you'll need to replace:
 
 ## Environment Variables
 
-Set your token in an environment variable to BRUTE_TOKEN
+Set your token in an environment variable to BRUTE_TOKEN.
+
 In a shell script to launch the bot, you can do
 `export BRUTE_TOKEN=[token]`
 
