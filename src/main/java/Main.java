@@ -112,6 +112,9 @@ public class Main extends ListenerAdapter {
                 // Otherwise, delete it
                 TimeUnit.MILLISECONDS.sleep(Long.parseLong(System.getenv("SLEEP_MILLIS")));
                 invite.delete().complete();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                System.out.println("Continuing anyway.");
             } catch (Exception e) {
                 e.printStackTrace();
                 triggeredChannel.sendMessage("Unable to continue brute forcing invites.\n" +
