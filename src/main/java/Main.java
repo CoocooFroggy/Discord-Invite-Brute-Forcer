@@ -26,14 +26,13 @@ public class Main extends ListenerAdapter {
         registerSlashCommands();
 
         // Be able to start a brute from CLI if we're lazy
+        // channel ID, channel to send "finished!" message into, brute string, ignore case
         if (args.length == 4) {
             GuildChannel channel = jda.getGuildChannelById(args[0]);
             MessageChannel triggeredChannel = jda.getTextChannelById(args[1]);
             String brute = args[2];
             String ignoreCaseString = args[3];
-            boolean ignoreCase = false;
-            if (ignoreCaseString.equalsIgnoreCase("true"))
-                ignoreCase = true;
+            boolean ignoreCase = ignoreCaseString.equalsIgnoreCase("true");
 
             startBrute(channel, triggeredChannel, brute, ignoreCase);
         }
@@ -42,26 +41,25 @@ public class Main extends ListenerAdapter {
     static JDA jda;
     static String token;
 
-    public static boolean startBot() throws InterruptedException {
+    public static void startBot() throws InterruptedException {
         // Set your token in an environment variable to BRUTE_TOKEN
         // In a shell script to launch the bot, you can do
         // export BRUTE_TOKEN=[token]
-        token = System.getenv("BRUTE_TOKEN");
+        token = System.getenv("TOKEN");
         JDABuilder jdaBuilder = JDABuilder.createDefault(token);
         jdaBuilder.setStatus(OnlineStatus.INVISIBLE);
         try {
             jda = jdaBuilder.build();
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return;
         }
         jda.addEventListener(new Main());
         jda.awaitReady();
-        return true;
     }
 
     public static void registerSlashCommands() {
-        Guild guild = jda.getGuildById("YOUR ID HERE");
+        Guild guild = jda.getGuildById(System.getenv("GUILD_ID"));
         assert guild != null;
         Command bruteCommand = jda.upsertCommand("brute", "Brute force invite for specified string")
                 .addOption(OptionType.STRING, "string", "String to brute force", true)
@@ -70,7 +68,7 @@ public class Main extends ListenerAdapter {
                 .setDefaultEnabled(false)
                 .complete();
 
-        bruteCommand.updatePrivileges(guild, CommandPrivilege.enableRole("YOUR MOD ROLE ID HERE")).complete();
+            bruteCommand.updatePrivileges(guild, CommandPrivilege.enableRole(System.getenv("MOD_ROLE_ID"))).complete();
     }
 
     @Override
