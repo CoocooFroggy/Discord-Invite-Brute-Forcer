@@ -110,7 +110,7 @@ public class Main extends ListenerAdapter {
                 if (code.startsWith(brute))
                     break;
                 // Otherwise, delete it
-                TimeUnit.SECONDS.sleep(Long.parseLong(System.getenv("SLEEP_MILLIS")));
+                TimeUnit.MILLISECONDS.sleep(Long.parseLong(System.getenv("SLEEP_MILLIS")));
                 invite.delete().complete();
             } catch (Exception e) {
                 e.printStackTrace();
