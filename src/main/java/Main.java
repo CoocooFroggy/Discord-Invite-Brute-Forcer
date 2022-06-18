@@ -93,7 +93,7 @@ public class Main extends ListenerAdapter {
         // We break anyway, but we'll have this while condition here just in case
         while (!code.startsWith(brute)) {
             try {
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.MILLISECONDS.sleep(Long.parseLong(System.getenv("SLEEP_MILLIS")));
                 // Create the invite
                 invite = channel.createInvite()
                         .setUnique(true)
@@ -110,7 +110,7 @@ public class Main extends ListenerAdapter {
                 if (code.startsWith(brute))
                     break;
                 // Otherwise, delete it
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.SECONDS.sleep(Long.parseLong(System.getenv("SLEEP_MILLIS")));
                 invite.delete().complete();
             } catch (Exception e) {
                 e.printStackTrace();
