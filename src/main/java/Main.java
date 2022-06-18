@@ -1,21 +1,21 @@
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class Main extends ListenerAdapter {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
         try {
             startBot();
@@ -58,12 +58,14 @@ public class Main extends ListenerAdapter {
     }
 
     public static void registerSlashCommands() {
+        logger.info("Commands queued for updating.");
         jda.upsertCommand("brute", "Brute force invite for specified string")
                 .addOption(OptionType.STRING, "string", "String to brute force", true)
                 .addOption(OptionType.BOOLEAN, "case_sensitive", "True if case sensitive, false if not", true)
                 .addOption(OptionType.CHANNEL, "channel", "Channel to brute invites for", true)
                 .setDefaultEnabled(false)
                 .complete();
+        logger.info("Commands updated.");
     }
 
     @Override
