@@ -93,7 +93,7 @@ public class Main extends ListenerAdapter {
         // We break anyway, but we'll have this while condition here just in case
         while (!code.startsWith(brute)) {
             try {
-                TimeUnit.SECONDS.sleep(2);
+                TimeUnit.SECONDS.sleep(1);
                 // Create the invite
                 invite = channel.createInvite()
                         .setUnique(true)
@@ -110,12 +110,13 @@ public class Main extends ListenerAdapter {
                 if (code.startsWith(brute))
                     break;
                 // Otherwise, delete it
-                TimeUnit.SECONDS.sleep(2);
+                TimeUnit.SECONDS.sleep(1);
                 invite.delete().complete();
             } catch (Exception e) {
                 e.printStackTrace();
                 triggeredChannel.sendMessage("Unable to continue brute forcing invites.\n" +
-                        e.getMessage()).queue();
+                        "`" + e.getMessage() + "`").queue();
+                return;
             }
         }
         // Got the invite!
