@@ -62,7 +62,7 @@ public class Main extends ListenerAdapter {
         jda.upsertCommand("brute", "Brute force invite for specified string")
                 .addOption(OptionType.STRING, "string", "String to brute force", true)
                 .addOption(OptionType.BOOLEAN, "case_sensitive", "True if case sensitive, false if not", true)
-                .addOption(OptionType.CHANNEL, "channel", "Channel to brute invites for", true)
+                .addOption(OptionType.CHANNEL, "channel", "Channel to brute force invites for", true)
                 .setDefaultEnabled(false)
                 .complete();
         logger.info("Commands updated.");
@@ -81,7 +81,7 @@ public class Main extends ListenerAdapter {
             }
             boolean ignoreCase = !event.getOption("case_sensitive").getAsBoolean();
 
-            event.reply("Starting").queue();
+            event.reply("Brute force started!").queue();
 
             startBrute(channel, triggeredChannel, brute, ignoreCase);
         }
@@ -90,13 +90,12 @@ public class Main extends ListenerAdapter {
     public static void startBrute(GuildChannel channel, MessageChannel triggeredChannel, String brute, boolean ignoreCase) {
         Invite invite = null;
         String code = "";
-        // We break anyways, but we'll have this while condition here just in case
+        // We break anyway, but we'll have this while condition here just in case
         while (!code.startsWith(brute)) {
             try {
                 TimeUnit.SECONDS.sleep(2);
                 // Create the invite
-                invite = channel
-                        .createInvite()
+                invite = channel.createInvite()
                         .setUnique(true)
                         .setMaxAge(0)
                         .setMaxUses(0)
@@ -115,7 +114,8 @@ public class Main extends ListenerAdapter {
                 invite.delete().complete();
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("Continuing anyways");
+                triggeredChannel.sendMessage("Unable to continue brute forcing invites.\n" +
+                        e.getMessage()).queue();
             }
         }
         // Got the invite!
