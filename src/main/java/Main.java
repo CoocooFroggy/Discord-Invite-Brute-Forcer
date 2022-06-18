@@ -59,16 +59,12 @@ public class Main extends ListenerAdapter {
     }
 
     public static void registerSlashCommands() {
-        Guild guild = jda.getGuildById(System.getenv("GUILD_ID"));
-        assert guild != null;
-        Command bruteCommand = jda.upsertCommand("brute", "Brute force invite for specified string")
+        jda.upsertCommand("brute", "Brute force invite for specified string")
                 .addOption(OptionType.STRING, "string", "String to brute force", true)
                 .addOption(OptionType.BOOLEAN, "case_sensitive", "True if case sensitive, false if not", true)
                 .addOption(OptionType.CHANNEL, "channel", "Channel to brute invites for", true)
                 .setDefaultEnabled(false)
                 .complete();
-
-            bruteCommand.updatePrivileges(guild, CommandPrivilege.enableRole(System.getenv("MOD_ROLE_ID"))).complete();
     }
 
     @Override
