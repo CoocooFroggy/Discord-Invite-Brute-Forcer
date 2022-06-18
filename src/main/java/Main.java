@@ -44,10 +44,9 @@ public class Main extends ListenerAdapter {
     public static void startBot() throws InterruptedException {
         // Set your token in an environment variable to BRUTE_TOKEN
         // In a shell script to launch the bot, you can do
-        // export BRUTE_TOKEN=[token]
+        // export TOKEN=[token]
         token = System.getenv("TOKEN");
         JDABuilder jdaBuilder = JDABuilder.createDefault(token);
-        jdaBuilder.setStatus(OnlineStatus.INVISIBLE);
         try {
             jda = jdaBuilder.build();
         } catch (Exception e) {
@@ -74,8 +73,8 @@ public class Main extends ListenerAdapter {
             MessageChannel triggeredChannel = event.getChannel();
             String brute = Objects.requireNonNull(event.getOption("string")).getAsString();
 
-            if (brute.length() > 8) {
-                event.reply("String is longer than 8 characters, can't continue.").queue();
+            if (brute.length() > 10) {
+                event.reply("String is longer than 10 characters, can't continue.").queue();
                 return;
             }
             boolean ignoreCase = !event.getOption("case_sensitive").getAsBoolean();
@@ -109,11 +108,9 @@ public class Main extends ListenerAdapter {
                 // Check if it matches
                 if (code.startsWith(brute))
                     break;
-                // Unnecessary but just in case, I'll include this else block
-                else {
-                    TimeUnit.SECONDS.sleep(2);
-                    invite.delete().complete();
-                }
+                // Otherwise, delete it
+                TimeUnit.SECONDS.sleep(2);
+                invite.delete().complete();
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Continuing anyways");
