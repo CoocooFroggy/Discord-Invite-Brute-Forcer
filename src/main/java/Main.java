@@ -129,6 +129,7 @@ public class Main extends ListenerAdapter {
         } catch (InterruptedException e) {
             // Try again
             deleteInvite(invite);
+            return;
         }
         invite.delete().complete();
     }
