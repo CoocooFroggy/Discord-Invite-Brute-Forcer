@@ -109,12 +109,7 @@ public class Main extends ListenerAdapter {
                 // Check if it matches
                 if (code.startsWith(brute))
                     break;
-                // Otherwise, delete it
-                TimeUnit.MILLISECONDS.sleep(Long.parseLong(System.getenv("SLEEP_MILLIS")));
-                invite.delete().complete();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                System.out.println("Continuing anyway.");
+                deleteInvite(invite);
             } catch (Exception e) {
                 e.printStackTrace();
                 triggeredChannel.sendMessage("Unable to continue brute forcing invites.\n" +
@@ -125,5 +120,16 @@ public class Main extends ListenerAdapter {
         // Got the invite!
         System.out.println(invite.getUrl());
         triggeredChannel.sendMessage("Invite brute forced!\n" + invite.getUrl()).queue();
+    }
+
+    private static void deleteInvite(Invite invite) {
+        // Otherwise, delete it
+        try {
+            TimeUnit.MILLISECONDS.sleep(Long.parseLong(System.getenv("SLEEP_MILLIS")));
+        } catch (InterruptedException e) {
+            // Try again
+            deleteInvite(invite);
+        }
+        invite.delete().complete();
     }
 }
