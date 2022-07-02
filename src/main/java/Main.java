@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
@@ -131,6 +132,12 @@ public class Main extends ListenerAdapter {
             deleteInvite(invite);
             return;
         }
-        invite.delete().complete();
+        try {
+            invite.delete().complete();
+        } catch (ErrorResponseException e) {
+            e.printStackTrace();
+            logger.error(e.getErrorResponse().toString());
+            logger.error("Continuing anyway...");
+        }
     }
 }
